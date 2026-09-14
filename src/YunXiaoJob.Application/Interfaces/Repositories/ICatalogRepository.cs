@@ -1,0 +1,3 @@
+using YunXiaoJob.Domain.Entities;
+namespace YunXiaoJob.Application.Interfaces.Repositories;
+public interface ICatalogRepository { Task<IReadOnlyList<JobCategory>> GetCategoriesAsync(CancellationToken cancellationToken = default); Task<IReadOnlyList<Skill>> GetSkillsAsync(CancellationToken cancellationToken = default); Task<IReadOnlyList<Location>> GetLocationsAsync(CancellationToken cancellationToken = default); Task AddCategoryAsync(JobCategory category, CancellationToken cancellationToken = default); Task AddSkillAsync(Skill skill, CancellationToken cancellationToken = default); Task AddLocationAsync(Location location, CancellationToken cancellationToken = default); }

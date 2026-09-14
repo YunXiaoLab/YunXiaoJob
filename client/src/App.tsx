@@ -1,0 +1,10 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { AuthProvider } from './features/auth/AuthProvider'
+import { ProtectedRoute } from './components/auth/ProtectedRoute'
+import { AppShell } from './components/layout/AppShell'
+import { HomePage } from './pages/HomePage'
+import { JobsPage } from './pages/JobsPage'
+import { JobDetailPage } from './pages/JobDetailPage'
+import { AuthPage } from './pages/AuthPage'
+import { PortalPage } from './pages/PortalPage'
+export default function App() { return <AuthProvider><BrowserRouter><Routes><Route element={<AppShell/>}><Route path="/" element={<HomePage/>}/><Route path="/jobs" element={<JobsPage/>}/><Route path="/jobs/:id" element={<JobDetailPage/>}/><Route element={<ProtectedRoute/>}><Route path="/candidate" element={<PortalPage/>}/><Route path="/employer" element={<PortalPage employer/>}/></Route></Route><Route path="/login" element={<AuthPage/>}/><Route path="/register" element={<AuthPage/>}/></Routes></BrowserRouter></AuthProvider> }

@@ -1,0 +1,5 @@
+import { Link, NavLink, Outlet } from 'react-router-dom'
+
+export function AppShell() {
+  return <div className="app-shell"><header className="navbar"><Link className="brand" to="/"><span>Y</span> YunXiaoJob</Link><nav><NavLink to="/jobs">Tìm việc</NavLink><NavLink to="/employer">Nhà tuyển dụng</NavLink><NavLink to="/candidate">Việc của tôi</NavLink></nav><div className="nav-actions"><Link className="text-link" to="/login">Đăng nhập</Link><Link className="button button-small" to="/register">Đăng ký</Link></div></header><main><Outlet /></main><footer className="footer"><div><Link className="brand" to="/"><span>Y</span> YunXiaoJob</Link><p>Kết nối công việc đúng người, đúng thời điểm.</p></div><div><strong>Dành cho ứng viên</strong><Link to="/jobs">Tìm việc làm</Link><Link to="/candidate">Quản lý hồ sơ</Link></div><div><strong>Dành cho doanh nghiệp</strong><Link to="/employer">Đăng tin tuyển dụng</Link><a href="mailto:hello@yunxiaojob.vn">Liên hệ hỗ trợ</a></div><small>© 2026 YunXiaoJob. All rights reserved.</small></footer></div>
+}

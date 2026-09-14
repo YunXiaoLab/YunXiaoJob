@@ -1,0 +1,3 @@
+import { Link } from 'react-router-dom'
+import type { Job } from '../../data/jobs'
+export function JobCard({ job }: { job: Job }) { return <article className="job-card"><div className="company-mark">{job.company.slice(0, 1)}</div><div className="job-card-content"><div className="job-card-heading"><div><Link to={`/jobs/${job.id}`}><h3>{job.title}</h3></Link><p>{job.company}</p></div><button className="save-button" aria-label="Lưu việc làm">♡</button></div><strong>{job.salary}</strong><div className="job-meta"><span>⌖ {job.location}</span><span>{job.mode}</span><span>{job.posted}</span></div><div className="tags">{job.tags.map(tag => <span key={tag}>{tag}</span>)}</div></div></article> }

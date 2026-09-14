@@ -1,0 +1,6 @@
+@YunXiaoJob.API_HostAddress = http://localhost:5018
+
+GET {{YunXiaoJob.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

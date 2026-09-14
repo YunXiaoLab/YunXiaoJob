@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/YunXiaoJob.API/YunXiaoJob.API.csproj" />
+    <Project Path="src/YunXiaoJob.Application/YunXiaoJob.Application.csproj" />
+    <Project Path="src/YunXiaoJob.Domain/YunXiaoJob.Domain.csproj" />
+    <Project Path="src/YunXiaoJob.Infrastructure/YunXiaoJob.Infrastructure.csproj" />
+  </Folder>
+</Solution>
