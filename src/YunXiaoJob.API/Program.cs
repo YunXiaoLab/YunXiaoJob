@@ -10,6 +10,7 @@ using YunXiaoJob.Application.UseCases.Accounts;
 using YunXiaoJob.Application.UseCases.Applications;
 using YunXiaoJob.Application.UseCases.Candidates;
 using YunXiaoJob.Application.UseCases.Companies;
+using YunXiaoJob.Application.UseCases.CompanyRegistrations;
 using YunXiaoJob.Application.UseCases.Dashboards;
 using YunXiaoJob.Application.UseCases.JobPostings;
 using YunXiaoJob.Application.UseCases.Notifications;
@@ -25,14 +26,13 @@ builder.Services.AddCors(options => options.AddPolicy("Client", policy => policy
     .WithOrigins(builder.Configuration.GetValue<string>("ClientUrl") ?? "http://localhost:5173")
     .AllowAnyHeader().AllowAnyMethod()));
 var jwt = builder.Configuration.GetSection("Jwt").Get<JwtSettings>() ?? new JwtSettings();
-var crypto = builder.Configuration.GetSection("Cryptography").Get<CryptographySettings>() ?? new CryptographySettings();
 var smtp = builder.Configuration.GetSection("Smtp").Get<SmtpSettings>() ?? new SmtpSettings();
-builder.Services.AddSingleton(jwt); builder.Services.AddSingleton(crypto); builder.Services.AddSingleton(smtp);
+builder.Services.AddSingleton(jwt); builder.Services.AddSingleton(smtp);
 builder.Services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(x => x.TokenValidationParameters = new TokenValidationParameters { ValidateIssuer = true, ValidIssuer = jwt.Issuer, ValidateAudience = true, ValidAudience = jwt.Audience, ValidateIssuerSigningKey = true, IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)), ValidateLifetime = true, ClockSkew = TimeSpan.Zero });
 builder.Services.AddAuthorization();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); builder.Services.AddScoped<IUserRepository, UserRepository>(); builder.Services.AddScoped<ICompanyRepository, CompanyRepository>(); builder.Services.AddScoped<ICandidateRepository, CandidateRepository>(); builder.Services.AddScoped<IJobPostingRepository, JobPostingRepository>(); builder.Services.AddScoped<IJobApplicationRepository, JobApplicationRepository>(); builder.Services.AddScoped<INotificationRepository, NotificationRepository>(); builder.Services.AddScoped<ICatalogRepository, CatalogRepository>(); builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); builder.Services.AddScoped<IUserRepository, UserRepository>(); builder.Services.AddScoped<ICompanyRepository, CompanyRepository>(); builder.Services.AddScoped<ICandidateRepository, CandidateRepository>(); builder.Services.AddScoped<IJobPostingRepository, JobPostingRepository>(); builder.Services.AddScoped<IJobApplicationRepository, JobApplicationRepository>(); builder.Services.AddScoped<INotificationRepository, NotificationRepository>(); builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<IPasswordService, PasswordService>(); builder.Services.AddScoped<ICryptographyService, CryptographyService>(); builder.Services.AddScoped<IAuthTokenService, JwtTokenService>(); builder.Services.AddScoped<IEmailService, SmtpEmailService>();
-foreach (var type in typeof(RegisterCandidateUseCase).Assembly.GetTypes().Where(x => x.IsClass && !x.IsAbstract && x.Name.EndsWith("UseCase"))) builder.Services.AddScoped(type);
+foreach (var type in typeof(LoginUseCase).Assembly.GetTypes().Where(x => x.IsClass && !x.IsAbstract && x.Name.EndsWith("UseCase"))) builder.Services.AddScoped(type);
 var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>(); app.UseHttpsRedirection(); app.UseCors("Client"); app.UseAuthentication(); app.UseMiddleware<AuthMiddleware>(); app.UseMiddleware<FileValidationMiddleware>(); app.UseAuthorization(); app.MapControllers(); app.Run();

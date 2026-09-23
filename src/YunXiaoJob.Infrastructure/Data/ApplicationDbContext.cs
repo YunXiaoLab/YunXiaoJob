@@ -10,6 +10,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<CandidateProfile> CandidateProfiles => Set<CandidateProfile>();
     public DbSet<Resume> Resumes => Set<Resume>();
+    public DbSet<CandidateEducation> CandidateEducations => Set<CandidateEducation>();
+    public DbSet<CandidateExperience> CandidateExperiences => Set<CandidateExperience>();
+    public DbSet<CandidateSkill> CandidateSkills => Set<CandidateSkill>();
     public DbSet<Company> Companies => Set<Company>();
     public DbSet<CompanyMember> CompanyMembers => Set<CompanyMember>();
     public DbSet<JobPosting> JobPostings => Set<JobPosting>();
@@ -26,6 +29,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Skill> Skills => Set<Skill>();
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<RegistrationChallenge> RegistrationChallenges => Set<RegistrationChallenge>();
+    public DbSet<CompanyRegistration> CompanyRegistrations => Set<CompanyRegistration>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -54,13 +58,71 @@ public class ApplicationDbContext : DbContext
             entity.HasKey(x => x.Id);
             entity.Property(x => x.Headline).HasMaxLength(250);
             entity.Property(x => x.Location).HasMaxLength(250);
+            entity.Property(x => x.AvatarUrl).HasMaxLength(1000);
+            entity.Property(x => x.ExpectedSalaryCurrency).HasMaxLength(3);
+            entity.Property(x => x.ExpectedMinSalary).HasPrecision(18, 2);
+            entity.Property(x => x.ExpectedMaxSalary).HasPrecision(18, 2);
+            entity.Property(x => x.LinkedInUrl).HasMaxLength(500);
+            entity.Property(x => x.GitHubUrl).HasMaxLength(500);
+            entity.Property(x => x.PortfolioUrl).HasMaxLength(500);
+            entity.Property(x => x.Gender).HasConversion<int>();
             entity.HasIndex(x => x.UserId).IsUnique();
             entity.HasIndex(x => new { x.IsSearchable, x.Location });
+            entity.HasIndex(x => new { x.IsSearchable, x.YearsOfExperience });
 
             entity.HasMany(x => x.Resumes)
                 .WithOne()
                 .HasForeignKey(x => x.CandidateProfileId)
                 .OnDelete(DeleteBehavior.Cascade);
+            entity.HasMany(x => x.Educations)
+                .WithOne()
+                .HasForeignKey(x => x.CandidateProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasMany(x => x.Experiences)
+                .WithOne()
+                .HasForeignKey(x => x.CandidateProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasMany(x => x.Skills)
+                .WithOne()
+                .HasForeignKey(x => x.CandidateProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<CandidateEducation>(entity =>
+        {
+            entity.ToTable("CandidateEducations");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.SchoolName).IsRequired().HasMaxLength(250);
+            entity.Property(x => x.Major).HasMaxLength(250);
+            entity.Property(x => x.Description).HasMaxLength(2000);
+            entity.Property(x => x.Level).HasConversion<int>();
+            entity.Property(x => x.Gpa).HasPrecision(4, 2);
+            entity.Property(x => x.GpaScale).HasPrecision(4, 2);
+            entity.HasIndex(x => new { x.CandidateProfileId, x.Level });
+            entity.HasIndex(x => x.Major);
+        });
+
+        builder.Entity<CandidateExperience>(entity =>
+        {
+            entity.ToTable("CandidateExperiences");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.CompanyName).IsRequired().HasMaxLength(250);
+            entity.Property(x => x.JobTitle).IsRequired().HasMaxLength(250);
+            entity.Property(x => x.Location).HasMaxLength(250);
+            entity.Property(x => x.Description).HasMaxLength(4000);
+            entity.Property(x => x.EmploymentType).HasConversion<int?>();
+            entity.HasIndex(x => new { x.CandidateProfileId, x.StartDate });
+            entity.HasIndex(x => x.JobTitle);
+        });
+
+        builder.Entity<CandidateSkill>(entity =>
+        {
+            entity.ToTable("CandidateSkills");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Name).IsRequired().HasMaxLength(100);
+            entity.Property(x => x.Proficiency).HasConversion<int>();
+            entity.HasIndex(x => new { x.CandidateProfileId, x.Name }).IsUnique();
+            entity.HasIndex(x => new { x.Name, x.Proficiency });
         });
 
         builder.Entity<Resume>(entity =>
@@ -101,6 +163,36 @@ public class ApplicationDbContext : DbContext
             entity.HasOne<User>()
                 .WithMany()
                 .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<CompanyRegistration>(entity =>
+        {
+            entity.ToTable("CompanyRegistrations");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.CompanyName).IsRequired().HasMaxLength(250);
+            entity.Property(x => x.Website).HasMaxLength(500);
+            entity.Property(x => x.Address).HasMaxLength(500);
+            entity.Property(x => x.Industry).HasMaxLength(150);
+            entity.Property(x => x.ContactFullName).IsRequired().HasMaxLength(200);
+            entity.Property(x => x.ContactEmail).IsRequired().HasMaxLength(255);
+            entity.Property(x => x.ContactPhoneNumber).HasMaxLength(30);
+            entity.Property(x => x.ReviewNote).HasMaxLength(2000);
+            entity.Property(x => x.Status).HasConversion<int>();
+            entity.HasIndex(x => new { x.Status, x.CreatedAtUtc });
+            entity.HasIndex(x => x.ContactEmail);
+
+            entity.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(x => x.ReviewedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne<Company>()
+                .WithMany()
+                .HasForeignKey(x => x.CreatedCompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(x => x.CreatedOwnerUserId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 

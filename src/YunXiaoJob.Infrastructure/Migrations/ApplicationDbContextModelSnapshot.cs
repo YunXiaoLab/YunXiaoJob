@@ -59,14 +59,151 @@ namespace YunXiaoJob.Infrastructure.Migrations
                     b.ToTable("ApplicationStatusHistories", (string)null);
                 });
 
+            modelBuilder.Entity("YunXiaoJob.Domain.Entities.CandidateEducation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CandidateProfileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int?>("EndYear")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Gpa")
+                        .HasPrecision(4, 2)
+                        .HasColumnType("decimal(4,2)");
+
+                    b.Property<decimal?>("GpaScale")
+                        .HasPrecision(4, 2)
+                        .HasColumnType("decimal(4,2)");
+
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Major")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("SchoolName")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int?>("StartYear")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Major");
+
+                    b.HasIndex("CandidateProfileId", "Level");
+
+                    b.ToTable("CandidateEducations", (string)null);
+                });
+
+            modelBuilder.Entity("YunXiaoJob.Domain.Entities.CandidateExperience", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CandidateProfileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<int?>("EmploymentType")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobTitle");
+
+                    b.HasIndex("CandidateProfileId", "StartDate");
+
+                    b.ToTable("CandidateExperiences", (string)null);
+                });
+
             modelBuilder.Entity("YunXiaoJob.Domain.Entities.CandidateProfile", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("AvatarUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
+
+                    b.Property<DateOnly?>("DateOfBirth")
+                        .HasColumnType("date");
+
+                    b.Property<decimal?>("ExpectedMaxSalary")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("ExpectedMinSalary")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ExpectedSalaryCurrency")
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GitHubUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Headline")
                         .HasMaxLength(250)
@@ -75,9 +212,17 @@ namespace YunXiaoJob.Infrastructure.Migrations
                     b.Property<bool>("IsSearchable")
                         .HasColumnType("bit");
 
+                    b.Property<string>("LinkedInUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("Location")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("PortfolioUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Summary")
                         .HasColumnType("nvarchar(max)");
@@ -98,7 +243,48 @@ namespace YunXiaoJob.Infrastructure.Migrations
 
                     b.HasIndex("IsSearchable", "Location");
 
+                    b.HasIndex("IsSearchable", "YearsOfExperience");
+
                     b.ToTable("CandidateProfiles", (string)null);
+                });
+
+            modelBuilder.Entity("YunXiaoJob.Domain.Entities.CandidateSkill", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CandidateProfileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("LastUsedYear")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Proficiency")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("YearsOfExperience")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CandidateProfileId", "Name")
+                        .IsUnique();
+
+                    b.HasIndex("Name", "Proficiency");
+
+                    b.ToTable("CandidateSkills", (string)null);
                 });
 
             modelBuilder.Entity("YunXiaoJob.Domain.Entities.Company", b =>
@@ -182,6 +368,89 @@ namespace YunXiaoJob.Infrastructure.Migrations
                     b.HasIndex("UserId", "IsActive");
 
                     b.ToTable("CompanyMembers", (string)null);
+                });
+
+            modelBuilder.Entity("YunXiaoJob.Domain.Entities.CompanyRegistration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("ContactEmail")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("ContactFullName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ContactPhoneNumber")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedCompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CreatedOwnerUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EmployeeCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Industry")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("ReviewNote")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime?>("ReviewedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ReviewedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Website")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactEmail");
+
+                    b.HasIndex("CreatedCompanyId");
+
+                    b.HasIndex("CreatedOwnerUserId");
+
+                    b.HasIndex("ReviewedByUserId");
+
+                    b.HasIndex("Status", "CreatedAtUtc");
+
+                    b.ToTable("CompanyRegistrations", (string)null);
                 });
 
             modelBuilder.Entity("YunXiaoJob.Domain.Entities.Interview", b =>
@@ -830,11 +1099,38 @@ namespace YunXiaoJob.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("YunXiaoJob.Domain.Entities.CandidateEducation", b =>
+                {
+                    b.HasOne("YunXiaoJob.Domain.Entities.CandidateProfile", null)
+                        .WithMany("Educations")
+                        .HasForeignKey("CandidateProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("YunXiaoJob.Domain.Entities.CandidateExperience", b =>
+                {
+                    b.HasOne("YunXiaoJob.Domain.Entities.CandidateProfile", null)
+                        .WithMany("Experiences")
+                        .HasForeignKey("CandidateProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("YunXiaoJob.Domain.Entities.CandidateProfile", b =>
                 {
                     b.HasOne("YunXiaoJob.Domain.Entities.User", null)
                         .WithOne("CandidateProfile")
                         .HasForeignKey("YunXiaoJob.Domain.Entities.CandidateProfile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("YunXiaoJob.Domain.Entities.CandidateSkill", b =>
+                {
+                    b.HasOne("YunXiaoJob.Domain.Entities.CandidateProfile", null)
+                        .WithMany("Skills")
+                        .HasForeignKey("CandidateProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -852,6 +1148,24 @@ namespace YunXiaoJob.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("YunXiaoJob.Domain.Entities.CompanyRegistration", b =>
+                {
+                    b.HasOne("YunXiaoJob.Domain.Entities.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedCompanyId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("YunXiaoJob.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedOwnerUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("YunXiaoJob.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("ReviewedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("YunXiaoJob.Domain.Entities.Interview", b =>
@@ -997,7 +1311,13 @@ namespace YunXiaoJob.Infrastructure.Migrations
 
             modelBuilder.Entity("YunXiaoJob.Domain.Entities.CandidateProfile", b =>
                 {
+                    b.Navigation("Educations");
+
+                    b.Navigation("Experiences");
+
                     b.Navigation("Resumes");
+
+                    b.Navigation("Skills");
                 });
 
             modelBuilder.Entity("YunXiaoJob.Domain.Entities.Company", b =>

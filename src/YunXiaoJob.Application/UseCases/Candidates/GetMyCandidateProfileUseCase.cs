@@ -13,8 +13,6 @@ public class GetMyCandidateProfileUseCase
     {
         var profile = await _candidates.GetProfileByUserIdAsync(currentUserId, true, cancellationToken)
             ?? throw new KeyNotFoundException("Candidate profile was not found.");
-        return new CandidateProfileResponse(profile.Id, profile.UserId, profile.Headline, profile.Summary,
-            profile.Location, profile.YearsOfExperience, profile.IsSearchable,
-            profile.Resumes.Select(x => new ResumeResponse(x.Id, x.Name, x.FileUrl, x.IsDefault)).ToList());
+        return profile.ToResponse();
     }
 }

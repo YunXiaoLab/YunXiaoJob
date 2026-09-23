@@ -17,6 +17,28 @@ public class PasswordService : IPasswordService
         return $"v1.{Iterations}.{Convert.ToBase64String(salt)}.{Convert.ToBase64String(hash)}";
     }
 
+    public string GenerateTemporaryPassword(int length = 12)
+    {
+        if (length < 8) throw new ArgumentOutOfRangeException(nameof(length), "A temporary password needs at least 8 characters.");
+        const string upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        const string lower = "abcdefghijkmnopqrstuvwxyz";
+        const string digits = "23456789";
+        const string symbols = "!@#$%&*?";
+        var alphabet = upper + lower + digits + symbols;
+        var characters = new char[length];
+        characters[0] = upper[RandomNumberGenerator.GetInt32(upper.Length)];
+        characters[1] = lower[RandomNumberGenerator.GetInt32(lower.Length)];
+        characters[2] = digits[RandomNumberGenerator.GetInt32(digits.Length)];
+        characters[3] = symbols[RandomNumberGenerator.GetInt32(symbols.Length)];
+        for (var i = 4; i < length; i++) characters[i] = alphabet[RandomNumberGenerator.GetInt32(alphabet.Length)];
+        for (var i = characters.Length - 1; i > 0; i--)
+        {
+            var j = RandomNumberGenerator.GetInt32(i + 1);
+            (characters[i], characters[j]) = (characters[j], characters[i]);
+        }
+        return new string(characters);
+    }
+
     public bool VerifyPassword(string password, string passwordHash)
     {
         if (string.IsNullOrEmpty(password) || string.IsNullOrWhiteSpace(passwordHash)) return false;

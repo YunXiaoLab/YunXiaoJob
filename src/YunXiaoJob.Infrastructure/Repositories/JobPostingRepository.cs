@@ -25,6 +25,7 @@ public class JobPostingRepository : IJobPostingRepository
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
         IQueryable<JobPosting> query = _context.JobPostings
+            .Include(x => x.Skills)
             .Where(x => x.Status == JobPostingStatus.Published &&
                 (!x.ApplicationDeadline.HasValue || x.ApplicationDeadline >= today));
 
@@ -45,6 +46,21 @@ public class JobPostingRepository : IJobPostingRepository
 
         return await query.OrderByDescending(x => x.PublishedAtUtc).ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<JobPosting>> GetAllAsync(JobPostingStatus? status,
+        CancellationToken cancellationToken = default)
+    {
+        IQueryable<JobPosting> query = _context.JobPostings.Include(x => x.Skills);
+        if (status is not null) query = query.Where(x => x.Status == status);
+        return await query.OrderByDescending(x => x.CreatedAtUtc).ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<JobPosting>> GetByIdsAsync(IReadOnlyCollection<Guid> jobPostingIds,
+        CancellationToken cancellationToken = default) =>
+        jobPostingIds.Count == 0
+            ? []
+            : await _context.JobPostings.Include(x => x.Skills)
+                .Where(x => jobPostingIds.Contains(x.Id)).ToListAsync(cancellationToken);
 
     public Task AddAsync(JobPosting jobPosting, CancellationToken cancellationToken = default) =>
         _context.JobPostings.AddAsync(jobPosting, cancellationToken).AsTask();

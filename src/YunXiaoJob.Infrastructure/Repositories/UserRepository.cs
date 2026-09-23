@@ -19,6 +19,12 @@ public class UserRepository : IUserRepository
         return _context.Users.FirstOrDefaultAsync(x => x.Email == normalizedEmail, cancellationToken);
     }
 
+    public async Task<IReadOnlyList<User>> GetByIdsAsync(IReadOnlyCollection<Guid> userIds,
+        CancellationToken cancellationToken = default) =>
+        userIds.Count == 0
+            ? []
+            : await _context.Users.Where(x => userIds.Contains(x.Id)).ToListAsync(cancellationToken);
+
     public Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         var normalizedEmail = email.Trim().ToLowerInvariant();

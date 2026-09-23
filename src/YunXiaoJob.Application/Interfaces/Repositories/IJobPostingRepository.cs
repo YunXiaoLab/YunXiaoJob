@@ -10,6 +10,10 @@ public interface IJobPostingRepository
     Task<IReadOnlyList<JobPosting>> GetPublishedAsync(string? keyword, string? location,
         EmploymentType? employmentType, WorkplaceType? workplaceType,
         CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<JobPosting>> GetAllAsync(JobPostingStatus? status,
+        CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<JobPosting>> GetByIdsAsync(IReadOnlyCollection<Guid> jobPostingIds,
+        CancellationToken cancellationToken = default);
     Task AddAsync(JobPosting jobPosting, CancellationToken cancellationToken = default);
     Task AddSkillAsync(JobPostingSkill skill, CancellationToken cancellationToken = default);
     void RemoveSkill(JobPostingSkill skill);

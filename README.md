@@ -11,6 +11,15 @@ src/
   YunXiaoJob.Domain/   # Business entities, states and rules; no framework dependency
   YunXiaoJob.Application/ # Use cases and contracts for repositories and services
   YunXiaoJob.Infrastructure/ # EF Core persistence, repository and security-service implementations
+  YunXiaoJob.API/      # ASP.NET Core controllers, middleware and composition root
+client/                # React + Vite web client (see client/README.md)
 docs/
   domain-model.md      # Domain design decisions
+```
+
+## Running locally
+
+```bash
+dotnet run --project src/YunXiaoJob.API   # http://localhost:5018
+cd client && npm install && npm run dev   # http://localhost:5173
 ```
