@@ -18,6 +18,7 @@ public class CompleteInterviewUseCase
         var job = await _jobs.GetByIdAsync(application.JobPostingId, cancellationToken: cancellationToken) ?? throw new KeyNotFoundException("Job posting was not found.");
         var member = await _companies.GetMemberAsync(job.CompanyId, currentUserId, cancellationToken);
         if (member is null || !member.IsActive || (member.Role is not (CompanyMemberRole.Owner or CompanyMemberRole.HR) && application.AssignedRecruiterMemberId != member.Id)) throw new UnauthorizedAccessException();
+        if (interview.Status != InterviewStatus.Scheduled) throw new InvalidOperationException("Only a scheduled interview can be completed.");
         interview.Status = InterviewStatus.Completed; interview.EvaluationNote = request.EvaluationNote?.Trim(); interview.Rating = request.Rating; interview.UpdatedAtUtc = DateTime.UtcNow;
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return new InterviewResponse(interview.Id, interview.JobApplicationId, interview.StartsAtUtc, interview.EndsAtUtc, interview.LocationOrMeetingUrl, interview.Status, interview.EvaluationNote, interview.Rating);

@@ -103,10 +103,11 @@ public class GetJobPostingDetailUseCase
     {
         var job = await _jobs.GetByIdAsync(jobPostingId, true, cancellationToken);
         // A posting that is not published is not public: it must not be readable by guessing its id.
-        if (job is null || job.Status != JobPostingStatus.Published)
+        if (job is null || job.Status != JobPostingStatus.Published || (job.ApplicationDeadline is not null && job.ApplicationDeadline < DateOnly.FromDateTime(DateTime.UtcNow)))
             throw new KeyNotFoundException("Job posting was not found.");
         var company = await _companies.GetByIdAsync(job.CompanyId, cancellationToken: cancellationToken)
             ?? throw new KeyNotFoundException("Company was not found.");
+        if (company.Status != CompanyStatus.Active) throw new KeyNotFoundException("Job posting was not found.");
         return new JobPostingDetailResponse(job.ToResponse(), company.ToResponse());
     }
 }

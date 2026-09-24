@@ -60,4 +60,19 @@ public class JobApplicationRepository : IJobApplicationRepository
 
     public Task AddOfferAsync(JobOffer offer, CancellationToken cancellationToken = default) =>
         _context.JobOffers.AddAsync(offer, cancellationToken).AsTask();
+    public async Task<int> ExpirePastDueOffersAsync(DateOnly today, CancellationToken cancellationToken = default)
+    {
+        var applicationIds = await _context.JobOffers.Where(x => x.Status == OfferStatus.Sent && x.ExpiresOn != null && x.ExpiresOn < today)
+            .Select(x => x.JobApplicationId).Distinct().ToListAsync(cancellationToken);
+        if (applicationIds.Count == 0) return 0;
+        var now = DateTime.UtcNow;
+        await _context.JobOffers.Where(x => x.Status == OfferStatus.Sent && x.ExpiresOn != null && x.ExpiresOn < today)
+            .ExecuteUpdateAsync(x => x.SetProperty(offer => offer.Status, OfferStatus.Expired).SetProperty(offer => offer.UpdatedAtUtc, now), cancellationToken);
+        await _context.JobApplications.Where(x => applicationIds.Contains(x.Id) && x.Status == ApplicationStatus.Offered)
+            .ExecuteUpdateAsync(x => x.SetProperty(application => application.Status, ApplicationStatus.Interviewing).SetProperty(application => application.UpdatedAtUtc, now), cancellationToken);
+        await _context.ApplicationStatusHistories.AddRangeAsync(applicationIds.Select(id => new ApplicationStatusHistory
+        { JobApplicationId = id, FromStatus = ApplicationStatus.Offered, ToStatus = ApplicationStatus.Interviewing, Note = "Offer expired." }), cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+        return applicationIds.Count;
+    }
 }

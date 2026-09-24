@@ -70,4 +70,8 @@ public class JobPostingRepository : IJobPostingRepository
 
     public void RemoveSkill(JobPostingSkill skill) => _context.JobPostingSkills.Remove(skill);
     public async Task<IReadOnlyList<JobPosting>> GetByCompanyAsync(Guid companyId, CancellationToken cancellationToken = default) => await _context.JobPostings.Where(x => x.CompanyId == companyId).Include(x => x.Skills).OrderByDescending(x => x.CreatedAtUtc).ToListAsync(cancellationToken);
+    public Task<int> ExpirePastDeadlineAsync(DateOnly today, CancellationToken cancellationToken = default) =>
+        _context.JobPostings.Where(x => x.Status == JobPostingStatus.Published && x.ApplicationDeadline != null && x.ApplicationDeadline < today)
+            .ExecuteUpdateAsync(x => x.SetProperty(job => job.Status, JobPostingStatus.Expired)
+                .SetProperty(job => job.UpdatedAtUtc, DateTime.UtcNow), cancellationToken);
 }

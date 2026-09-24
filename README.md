@@ -23,3 +23,16 @@ docs/
 dotnet run --project src/YunXiaoJob.API   # http://localhost:5018
 cd client && npm install && npm run dev   # http://localhost:5173
 ```
+
+## Google Meet for interviews
+
+Set the following environment variables on the API host before scheduling interviews:
+
+```text
+GoogleMeet__ClientId
+GoogleMeet__ClientSecret
+GoogleMeet__RefreshToken
+GoogleMeet__CalendarId=primary
+```
+
+The Google OAuth client must authorize Google Calendar event creation. Scheduling an interview creates a Calendar event with a Google Meet conference, invites the candidate, and writes the resulting Meet URL to the candidate notification.

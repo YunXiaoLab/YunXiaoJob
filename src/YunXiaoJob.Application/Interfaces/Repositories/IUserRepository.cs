@@ -13,6 +13,7 @@ public interface IUserRepository
     Task<RefreshToken?> GetRefreshTokenByHashAsync(string tokenHash, CancellationToken cancellationToken = default);
     Task<PasswordResetToken?> GetPasswordResetTokenByHashAsync(string tokenHash, CancellationToken cancellationToken = default);
     Task AddRefreshTokenAsync(RefreshToken token, CancellationToken cancellationToken = default);
+    Task RevokeRefreshTokensByUserIdAsync(Guid userId, DateTime revokedAtUtc, CancellationToken cancellationToken = default);
     Task AddPasswordResetTokenAsync(PasswordResetToken token, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<User>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<RegistrationChallenge?> GetRegistrationChallengeByIdAsync(Guid challengeId, CancellationToken cancellationToken = default);

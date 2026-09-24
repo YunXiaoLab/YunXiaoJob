@@ -40,6 +40,8 @@ public class CandidateRepository : ICandidateRepository
         CancellationToken cancellationToken = default) =>
         _context.SavedJobs.FirstOrDefaultAsync(x => x.CandidateProfileId == candidateProfileId &&
             x.JobPostingId == jobPostingId, cancellationToken);
+    public async Task<IReadOnlyList<SavedJob>> GetSavedJobsAsync(Guid candidateProfileId, CancellationToken cancellationToken = default) =>
+        await _context.SavedJobs.Where(x => x.CandidateProfileId == candidateProfileId).OrderByDescending(x => x.CreatedAtUtc).ToListAsync(cancellationToken);
 
     public Task AddProfileAsync(CandidateProfile profile, CancellationToken cancellationToken = default) =>
         _context.CandidateProfiles.AddAsync(profile, cancellationToken).AsTask();

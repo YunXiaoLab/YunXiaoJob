@@ -2,6 +2,7 @@ using YunXiaoJob.Application.DTOs.Requests;
 using YunXiaoJob.Application.DTOs.Responses;
 using YunXiaoJob.Application.Interfaces.Repositories;
 using YunXiaoJob.Application.UseCases.Queries;
+using YunXiaoJob.Domain.Enums;
 
 namespace YunXiaoJob.Application.UseCases.JobPostings;
 
@@ -19,6 +20,7 @@ public class SearchJobPostingsUseCase
             request.WorkplaceType, cancellationToken);
         var companies = (await _companies.GetByIdsAsync(jobs.Select(x => x.CompanyId).Distinct().ToList(),
             cancellationToken)).ToDictionary(x => x.Id);
-        return jobs.Select(x => x.ToSummary(companies.GetValueOrDefault(x.CompanyId))).ToList();
+        return jobs.Where(x => companies.GetValueOrDefault(x.CompanyId)?.Status == CompanyStatus.Active)
+            .Select(x => x.ToSummary(companies.GetValueOrDefault(x.CompanyId))).ToList();
     }
 }

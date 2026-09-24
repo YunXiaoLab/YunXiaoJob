@@ -18,4 +18,5 @@ public interface IJobPostingRepository
     Task AddSkillAsync(JobPostingSkill skill, CancellationToken cancellationToken = default);
     void RemoveSkill(JobPostingSkill skill);
     Task<IReadOnlyList<JobPosting>> GetByCompanyAsync(Guid companyId, CancellationToken cancellationToken = default);
+    Task<int> ExpirePastDeadlineAsync(DateOnly today, CancellationToken cancellationToken = default);
 }

@@ -23,8 +23,11 @@ public class AddCompanyMemberUseCase
             throw new UnauthorizedAccessException("Only the company owner can add members.");
         _ = await _users.GetByIdAsync(request.UserId, cancellationToken)
             ?? throw new KeyNotFoundException("User to add was not found.");
-        if (await _companies.HasActiveMemberAsync(companyId, request.UserId, cancellationToken))
+        if (request.Role == CompanyMemberRole.Owner) throw new InvalidOperationException("Owner role cannot be assigned through member management.");
+        var existing = await _companies.GetMemberAsync(companyId, request.UserId, cancellationToken);
+        if (existing?.IsActive == true)
             throw new InvalidOperationException("User is already an active company member.");
+        if (existing is not null) { existing.IsActive = true; existing.Role = request.Role; existing.UpdatedAtUtc = DateTime.UtcNow; await _unitOfWork.SaveChangesAsync(cancellationToken); return new CompanyMemberResponse(existing.Id, existing.CompanyId, existing.UserId, existing.Role, existing.IsActive); }
         var member = new CompanyMember { CompanyId = companyId, UserId = request.UserId, Role = request.Role };
         await _companies.AddMemberAsync(member, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

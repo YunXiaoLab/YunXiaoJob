@@ -15,6 +15,7 @@ public class ApproveCompanyUseCase
         var admin = await _users.GetByIdAsync(currentUserId, cancellationToken) ?? throw new UnauthorizedAccessException();
         if (admin.PlatformRole != PlatformRole.Admin) throw new UnauthorizedAccessException("Only an admin can approve a company.");
         var company = await _companies.GetByIdAsync(companyId, cancellationToken: cancellationToken) ?? throw new KeyNotFoundException("Company was not found.");
+        if (company.Status != CompanyStatus.PendingVerification) throw new InvalidOperationException("Only a pending company can be approved.");
         company.Status = CompanyStatus.Active; company.UpdatedAtUtc = DateTime.UtcNow;
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return new CompanyResponse(company.Id, company.Name, company.LogoUrl, company.Description, company.Website, company.Address, company.Industry, company.EmployeeCount, company.Status);

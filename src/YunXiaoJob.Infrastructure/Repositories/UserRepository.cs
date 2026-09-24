@@ -36,6 +36,9 @@ public class UserRepository : IUserRepository
     public Task<RefreshToken?> GetRefreshTokenByHashAsync(string tokenHash, CancellationToken cancellationToken = default) => _context.RefreshTokens.FirstOrDefaultAsync(x => x.TokenHash == tokenHash, cancellationToken);
     public Task<PasswordResetToken?> GetPasswordResetTokenByHashAsync(string tokenHash, CancellationToken cancellationToken = default) => _context.PasswordResetTokens.FirstOrDefaultAsync(x => x.TokenHash == tokenHash, cancellationToken);
     public Task AddRefreshTokenAsync(RefreshToken token, CancellationToken cancellationToken = default) => _context.RefreshTokens.AddAsync(token, cancellationToken).AsTask();
+    public Task RevokeRefreshTokensByUserIdAsync(Guid userId, DateTime revokedAtUtc, CancellationToken cancellationToken = default) =>
+        _context.RefreshTokens.Where(x => x.UserId == userId && x.RevokedAtUtc == null)
+            .ExecuteUpdateAsync(x => x.SetProperty(token => token.RevokedAtUtc, revokedAtUtc), cancellationToken);
     public Task AddPasswordResetTokenAsync(PasswordResetToken token, CancellationToken cancellationToken = default) => _context.PasswordResetTokens.AddAsync(token, cancellationToken).AsTask();
     public async Task<IReadOnlyList<User>> GetAllAsync(CancellationToken cancellationToken = default) => await _context.Users.OrderBy(x => x.Email).ToListAsync(cancellationToken);
     public Task<RegistrationChallenge?> GetRegistrationChallengeByIdAsync(Guid challengeId, CancellationToken cancellationToken = default) => _context.RegistrationChallenges.FirstOrDefaultAsync(x => x.Id == challengeId, cancellationToken);

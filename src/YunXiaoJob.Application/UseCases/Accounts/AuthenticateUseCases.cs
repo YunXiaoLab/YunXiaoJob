@@ -29,7 +29,9 @@ public class RefreshAccessTokenUseCase
     {
         var token = await _users.GetRefreshTokenByHashAsync(_crypto.ComputeHash(request.RefreshToken), cancellationToken);
         if (token is null || token.RevokedAtUtc is not null || token.ExpiresAtUtc <= DateTime.UtcNow) throw new UnauthorizedAccessException("Refresh token is invalid.");
-        var user = await _users.GetByIdAsync(token.UserId, cancellationToken) ?? throw new UnauthorizedAccessException(); token.RevokedAtUtc = DateTime.UtcNow;
+        var user = await _users.GetByIdAsync(token.UserId, cancellationToken);
+        if (user is null || !user.IsActive) throw new UnauthorizedAccessException("User account is inactive.");
+        token.RevokedAtUtc = DateTime.UtcNow;
         var refresh = _crypto.GenerateSecureToken(); var expires = DateTime.UtcNow.AddDays(30); await _users.AddRefreshTokenAsync(new RefreshToken { UserId = user.Id, TokenHash = _crypto.ComputeHash(refresh), ExpiresAtUtc = expires }, cancellationToken); await _unitOfWork.SaveChangesAsync(cancellationToken);
         return new AuthenticationResponse(_tokens.CreateAccessToken(user.Id, user.Email, user.PlatformRole), refresh, expires, new UserResponse(user.Id, user.Email, user.FullName, user.PhoneNumber, user.PlatformRole, user.IsActive));
     }
@@ -44,6 +46,7 @@ public class ResetPasswordUseCase
         var reset = await _users.GetPasswordResetTokenByHashAsync(_crypto.ComputeHash(request.Token), cancellationToken);
         if (reset is null || reset.UsedAtUtc is not null || reset.ExpiresAtUtc <= DateTime.UtcNow) throw new InvalidOperationException("Password reset token is invalid.");
         var user = await _users.GetByIdAsync(reset.UserId, cancellationToken) ?? throw new KeyNotFoundException("User was not found.");
-        user.PasswordHash = _passwords.HashPassword(request.NewPassword); user.UpdatedAtUtc = DateTime.UtcNow; reset.UsedAtUtc = DateTime.UtcNow; await _unitOfWork.SaveChangesAsync(cancellationToken);
+        var now = DateTime.UtcNow; user.PasswordHash = _passwords.HashPassword(request.NewPassword); user.UpdatedAtUtc = now; reset.UsedAtUtc = now;
+        await _users.RevokeRefreshTokensByUserIdAsync(user.Id, now, cancellationToken); await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

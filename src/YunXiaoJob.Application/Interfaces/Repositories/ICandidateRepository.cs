@@ -13,6 +13,7 @@ public interface ICandidateRepository
     Task<Resume?> GetResumeByIdAsync(Guid resumeId, CancellationToken cancellationToken = default);
     Task<SavedJob?> GetSavedJobAsync(Guid candidateProfileId, Guid jobPostingId,
         CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<SavedJob>> GetSavedJobsAsync(Guid candidateProfileId, CancellationToken cancellationToken = default);
     Task AddProfileAsync(CandidateProfile profile, CancellationToken cancellationToken = default);
     Task AddResumeAsync(Resume resume, CancellationToken cancellationToken = default);
     Task AddSavedJobAsync(SavedJob savedJob, CancellationToken cancellationToken = default);

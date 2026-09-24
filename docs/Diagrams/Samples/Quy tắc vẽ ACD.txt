@@ -1,0 +1,10 @@
+Quy tắc vẽ Activity Diagram (biểu đồ hoạt động) của bạn:
+
+Ưu tiên luồng nằm ngang.
+Tách swimlane Người dùng và Hệ thống. Lane Người dùng chỉ chứa thao tác trực tiếp của người dùng; xử lý backend nằm ở lane Hệ thống.
+Nút quyết định là hình thoi trống; điều kiện đặt trên các nhánh đi ra, không viết trong hình thoi.
+Tránh nối mũi tên trực tiếp giữa hai hình thoi; cho luồng đi qua một hoạt động hình chữ nhật.
+Dùng một Activity Final Node. Các nhánh nên hợp lại trước khi kết thúc.
+Gom các bước xử lý nhỏ ở mức khái quát phù hợp; bám theo luồng chính và luồng thay thế.
+Với nhánh lỗi hoặc ngoại lệ, ưu tiên cho nhập lại luồng trước nút kết thúc khi hợp lý.
+Bước cập nhật giao diện thuộc lane Hệ thống khi hệ thống thực hiện bước đó.

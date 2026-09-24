@@ -19,4 +19,5 @@ public interface IJobApplicationRepository
     Task AddStatusHistoryAsync(ApplicationStatusHistory history, CancellationToken cancellationToken = default);
     Task AddInterviewAsync(Interview interview, CancellationToken cancellationToken = default);
     Task AddOfferAsync(JobOffer offer, CancellationToken cancellationToken = default);
+    Task<int> ExpirePastDueOffersAsync(DateOnly today, CancellationToken cancellationToken = default);
 }
